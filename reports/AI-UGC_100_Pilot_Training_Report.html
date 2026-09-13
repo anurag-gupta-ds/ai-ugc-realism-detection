@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI-UGC — 100-Video Pilot Training Report</title>
+<style>
+  :root {
+    --indigo: #4338CA;
+    --indigo-dark: #312E81;
+    --teal: #0D9488;
+    --coral: #F97066;
+    --bg: #F7F7FB;
+    --card: #FFFFFF;
+    --text: #1F2430;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .header {
+    background: linear-gradient(120deg, var(--indigo) 0%, var(--indigo-dark) 55%, #1E1B4B 100%);
+    color: white;
+    padding: 48px 56px 40px;
+  }
+  .header .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 12px;
+    color: #C7D2FE;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 700;
+  }
+  .header p.sub {
+    margin: 0;
+    color: #E0E7FF;
+    font-size: 15px;
+    max-width: 680px;
+  }
+  .container {
+    max-width: 980px;
+    margin: -28px auto 56px;
+    padding: 0 24px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(16,24,40,0.06), 0 8px 24px rgba(16,24,40,0.06);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+  h2 {
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--indigo-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2 .tag {
+    font-size: 11px;
+    background: var(--indigo);
+    color: white;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  ul.bullets { margin: 0; padding-left: 20px; }
+  ul.bullets li { margin-bottom: 8px; }
+  .stat-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .stat-box {
+    flex: 1 1 150px;
+    background: #F5F3FF;
+    border: 1px solid #DDD6FE;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .stat-box .val {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--indigo-dark);
+  }
+  .stat-box .lbl {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+  table.metrics {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14.5px;
+  }
+  table.metrics th, table.metrics td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  table.metrics th {
+    background: #F9FAFB;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+  }
+  table.metrics td.model-name {
+    font-weight: 700;
+  }
+  table.metrics tr.xgb td.model-name { color: var(--teal); }
+  table.metrics tr.gnn td.model-name { color: var(--coral); }
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .pill.win { background: #D1FAE5; color: #065F46; }
+  .pill.behind { background: #FEE2E2; color: #991B1B; }
+  .bar-wrap {
+    background: #F3F4F6;
+    border-radius: 8px;
+    height: 10px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .bar-fill { height: 100%; border-radius: 8px; }
+  .imp-row {
+    display: grid;
+    grid-template-columns: 150px 1fr 60px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+  }
+  .imp-row .imp-val { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .verdict {
+    background: linear-gradient(135deg, #ECFDF5, #F0FDFA);
+    border: 1px solid #A7F3D0;
+    border-radius: 12px;
+    padding: 18px 22px;
+    font-size: 14.5px;
+  }
+  .verdict b { color: #047857; }
+  .next-steps li { margin-bottom: 6px; }
+  .footnote {
+    color: var(--muted);
+    font-size: 12.5px;
+    margin-top: 18px;
+    border-top: 1px dashed var(--border);
+    padding-top: 12px;
+  }
+  code { background: #F3F4F6; padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="eyebrow">AI-UGC Project · Pilot Milestone Report</div>
+    <h1>100-Video Pilot: Feature Extraction &amp; Model Training</h1>
+    <p class="sub">
+      End-to-end validation of the AI-generated-content-detection pipeline — MediaPipe landmark
+      extraction, statistical feature engineering, and a head-to-head training run of the
+      XGBoost baseline against the Graph Neural Network primary model.
+    </p>
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+      <h2><span class="tag">Overview</span>Pilot Summary</h2>
+      <div class="stat-row">
+        <div class="stat-box"><div class="val">100</div><div class="lbl">Videos Sampled</div></div>
+        <div class="stat-box"><div class="val">94</div><div class="lbl">Usable After Merge</div></div>
+        <div class="stat-box"><div class="val">75 / 19</div><div class="lbl">Train / Test Split</div></div>
+        <div class="stat-box"><div class="val">15</div><div class="lbl">Statistical Features</div></div>
+      </div>
+      <p style="margin-top:18px; margin-bottom:0; color:var(--muted); font-size:14px;">
+        Pipeline stages executed: video sampling (65 Indian / 35 global) → frame extraction (5 fps) →
+        MediaPipe face + pose landmark extraction → statistical feature aggregation (XGBoost path) and
+        raw landmark graph construction (GNN path) → Label Studio realism scoring (1–5 scale) →
+        feature/label merge → model training and evaluation.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2><span class="tag">Results</span>Model Comparison — Test Set Performance</h2>
+      <table class="metrics">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>MAE</th>
+            <th>RMSE</th>
+            <th>R² Score</th>
+            <th>Within ±1 Point</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="xgb">
+            <td class="model-name">XGBoost (baseline)</td>
+            <td>0.628</td>
+            <td>0.795</td>
+            <td>0.630</td>
+            <td>84.2%</td>
+            <td><span class="pill win">Best at this scale</span></td>
+          </tr>
+          <tr class="gnn">
+            <td class="model-name">Standard GNN (primary)</td>
+            <td>0.727</td>
+            <td>0.880</td>
+            <td>0.038</td>
+            <td>66.7%</td>
+            <td><span class="pill behind">Needs more data</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:22px;">
+        <div style="font-size:13px; color:var(--muted); margin-bottom:6px;">R² Score (higher is better)</div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <div style="width:110px; font-size:13px; font-weight:600; color:var(--teal);">XGBoost</div>
+          <div class="bar-wrap" style="flex:1;"><div class="bar-fill" style="width:63%; background:var(--teal);"></div></div>
+          <div style="width:40px; text-align:right; font-size:13px;">0.63</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:110px; font-size:13px; font-weight:600; color:var(--coral);">GNN</div>
+          <div class="bar-wrap" style="flex:1;"><div class="bar-fill" style="width:3.8%; background:var(--coral);"></div></div>
+          <div style="width:40px; text-align:right; font-size:13px;">0.04</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="tag">XGBoost</span>Top Feature Importances</h2>
+      <div class="imp-row"><div>pose_detection_rate</div><div class="bar-wrap"><div class="bar-fill" style="width:57.9%; background:var(--indigo);"></div></div><div class="imp-val">57.9%</div></div>
+      <div class="imp-row"><div>face_detection_rate</div><div class="bar-wrap"><div class="bar-fill" style="width:19.0%; background:var(--indigo);"></div></div><div class="imp-val">19.0%</div></div>
+      <div class="imp-row"><div>mouth_open_std</div><div class="bar-wrap"><div class="bar-fill" style="width:12.7%; background:var(--indigo);"></div></div><div class="imp-val">12.7%</div></div>
+      <div class="imp-row"><div>head_yaw_mean</div><div class="bar-wrap"><div class="bar-fill" style="width:2.3%; background:var(--indigo);"></div></div><div class="imp-val">2.3%</div></div>
+      <div class="imp-row"><div>mouth_open_mean</div><div class="bar-wrap"><div class="bar-fill" style="width:1.4%; background:var(--indigo);"></div></div><div class="imp-val">1.4%</div></div>
+      <p style="margin:14px 0 0; font-size:13px; color:var(--muted);">
+        Note: detection-rate features currently dominate importance — this reflects pipeline/data
+        artifacts (clarity of view) rather than pure behavioral realism signal, and is flagged for
+        correction before full-scale training (see Next Steps).
+      </p>
+    </div>
+
+    <div class="card">
+      <h2><span class="tag">Interpretation</span>What This Pilot Proves</h2>
+      <ul class="bullets">
+        <li>The full pipeline — extraction → features → labeling → training → evaluation — runs end-to-end without breaking.</li>
+        <li><b>XGBoost</b> performs solidly even at small scale (94 samples): 84.2% of predictions landed within ±1 point of the human-assigned realism score.</li>
+        <li><b>GNN</b> underperforms at this scale (R² = 0.038), which is expected — graph neural networks are data-hungry and typically need substantially more samples to learn meaningful structure. This does not invalidate the GNN approach; it confirms the plan to scale to the full 2,000-video dataset before drawing conclusions.</li>
+        <li>The dominant feature importance from detection-rate columns (face/pose visibility) indicates the pilot's realism labels partly reflect video clarity rather than pure movement naturalism — a labeling-rubric issue identified and being corrected ahead of full-scale rollout.</li>
+      </ul>
+    </div>
+
+    <div class="verdict">
+      <b>Bottom line:</b> The pipeline is validated and functional. XGBoost is the stronger performer
+      at pilot scale and is confirmed as the baseline model. GNN's weak pilot result is consistent with
+      its known data requirements and is not a disqualifying signal — full-scale training on 2,000 videos
+      is the next test of its actual capability.
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+      <h2><span class="tag">Next Steps</span>Before Scaling to 2,000 Videos</h2>
+      <ol class="next-steps">
+        <li>Correct the Label Studio rubric to rate movement/expression naturalism rather than visibility, and re-score the pilot labels.</li>
+        <li>Exclude <code>face_detection_rate</code>, <code>pose_detection_rate</code>, and <code>has_face_data</code> from the primary feature set, or explicitly flag them as pipeline-quality indicators rather than realism signal.</li>
+        <li>Re-run correlation and importance checks on the corrected labels to confirm behavioral features (blink rate, mouth movement, motion) carry the predictive signal.</li>
+        <li>Scale frame extraction, MediaPipe feature extraction, and labeling to the full 2,000-video dataset.</li>
+        <li>Retrain both models on the full dataset — GNN performance is expected to improve materially with volume.</li>
+      </ol>
+      <div class="footnote">
+        Report generated from the AI-UGC pilot training notebook (100-video sample, 94 usable after
+        feature/label merge). Metrics computed on a held-out 19-sample test split, random_state = 42.
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
